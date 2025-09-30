@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tremor Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+      // 🔹 Masukkan config punyamu di sini
+      const firebaseConfig = {
+        apiKey: "AIzaSyCUpSrDPRTvLOot4e4QboWgdJLj_PQByn8",
+        authDomain: "http://parkinson-11301.firebaseapp.com",
+        databaseURL: "https://parkinson-11301-default-rtdb.firebaseio.com",
+        projectId: "parkinson-11301",
+        storageBucket: "http://parkinson-11301.firebasestorage.app",
+        messagingSenderId: "779006164225",
+        appId: "779006164225",
+      };
+
+      // Inisialisasi Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+
+      // Referensi data tremor
+      const tremorRef = ref(database, "tremor/magnitude");
+
+      // Siapkan grafik
+      let ctx = null;
+      let tremorChart = null;
+      window.onload = function () {
+        ctx = document.getElementById("tremorChart").getContext("2d");
+        tremorChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Tremor Magnitude",
+                data: [],
+                borderColor: "red",
+                borderWidth: 2,
+                fill: false,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            animation: false,
+            scales: {
+              x: { display: true },
+              y: { display: true },
+            },
+          },
+        });
+      };
+
+      // Update grafik setiap kali ada data baru
+      onValue(tremorRef, (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          const now = new Date().toLocaleTimeString();
+          tremorChart.data.labels.push(now);
+          tremorChart.data.datasets[0].data.push(val);
+          tremorChart.update();
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <h2>Tremor Magnitude Realtime</h2>
+    <canvas id="tremorChart" width="600" height="400"></canvas>
+  </body>
+</html>
