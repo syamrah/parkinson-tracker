@@ -23,9 +23,10 @@
       const database = getDatabase(app);
 
       // 🔹 Ubah path sesuai struktur Firebase Anda
-      const tremorRef = ref(database, "/");
+      const tremorRef = ref(database, "tremor/magnitude");
 
-      let ctx, tremorChart;
+ let ctx = null;
+      let tremorChart = null;
       window.onload = function () {
         ctx = document.getElementById("tremorChart").getContext("2d");
         tremorChart = new Chart(ctx, {
@@ -78,3 +79,4 @@
     <canvas id="tremorChart" width="600" height="400"></canvas>
   </body>
 </html>
+
