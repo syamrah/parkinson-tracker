@@ -7,7 +7,7 @@
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
       import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-      // 🔹 Config Firebase Anda
+      // 🔹 Config Firebase
       const firebaseConfig = {
         apiKey: "AIzaSyCUpSrDPRTvLOot4e4QboWgdJLj_PQByn8",
         authDomain: "parkinson-11301.firebaseapp.com",
@@ -22,12 +22,14 @@
       const app = initializeApp(firebaseConfig);
       const database = getDatabase(app);
 
-      // 🔹 Ubah path sesuai struktur Firebase Anda
-      const tremorRef = ref(database, "tremor_data/esp32_tremor_01/history")
+      // 🔹 Path ke history tremor (bukan latest)
+      const tremorRef = ref(database, "tremor_data/esp32_tremor_01/history");
 
- let ctx = null;
+      let ctx = null;
       let tremorChart = null;
+
       window.onload = function () {
+        // Buat chart
         ctx = document.getElementById("tremorChart").getContext("2d");
         tremorChart = new Chart(ctx, {
           type: "line",
@@ -52,29 +54,28 @@
             },
           },
         });
-              // Update grafik dari Firebase
-              onValue(tremorRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                  tremorChart.data.labels = [];
-                  tremorChart.data.datasets[0].data = [];
-        
-                 const entries = Object.values(data).sort((a, b) => a.timestamp_ms - b.timestamp_ms);
-                entries.forEach((entry) => {
-                if (entry.magnitude !== undefined) {
-                  const timeLabel = new Date(entry.timestamp_ms).toLocaleTimeString();
-                  tremorChart.data.labels.push(timeLabel);
-                  tremorChart.data.datasets[0].data.push(entry.magnitude);
+
+        // 🔹 Update chart realtime dari Firebase
+        onValue(tremorRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            tremorChart.data.labels = [];
+            tremorChart.data.datasets[0].data = [];
+
+            // Urutkan history berdasarkan timestamp
+            const entries = Object.values(data).sort((a, b) => a.timestamp_ms - b.timestamp_ms);
+            entries.forEach((entry) => {
+              if (entry.magnitude !== undefined && entry.timestamp_ms !== undefined) {
+                const timeLabel = new Date(entry.timestamp_ms).toLocaleTimeString();
+                tremorChart.data.labels.push(timeLabel);
+                tremorChart.data.datasets[0].data.push(entry.magnitude);
+              }
+            });
+
+            tremorChart.update();
           }
         });
       };
-
-
-
-
-          tremorChart.update();
-        }
-      });
     </script>
   </head>
   <body>
@@ -82,17 +83,3 @@
     <canvas id="tremorChart" width="600" height="400"></canvas>
   </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
