@@ -5,33 +5,27 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-      import {
-        getDatabase,
-        ref,
-        onValue,
-      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+      import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-      // 🔹 Masukkan config punyamu di sini
+      // 🔹 Config Firebase Anda
       const firebaseConfig = {
         apiKey: "AIzaSyCUpSrDPRTvLOot4e4QboWgdJLj_PQByn8",
         authDomain: "parkinson-11301.firebaseapp.com",
         databaseURL: "https://parkinson-11301-default-rtdb.firebaseio.com",
         projectId: "parkinson-11301",
-        storageBucket: "parkinson-11301.firebasestorage.app",
+        storageBucket: "parkinson-11301.appspot.com",
         messagingSenderId: "779006164225",
-        appId: "779006164225",
+        appId: "779006164225"
       };
 
       // Inisialisasi Firebase
       const app = initializeApp(firebaseConfig);
       const database = getDatabase(app);
 
-      // Referensi data tremor
-      const tremorRef = ref(database, "tremor/magnitude");
+      // 🔹 Ubah path sesuai struktur Firebase Anda
+      const tremorRef = ref(database, "/");
 
-      // Siapkan grafik
-      let ctx = null;
-      let tremorChart = null;
+      let ctx, tremorChart;
       window.onload = function () {
         ctx = document.getElementById("tremorChart").getContext("2d");
         tremorChart = new Chart(ctx, {
@@ -59,29 +53,24 @@
         });
       };
 
-// Referensi ke root data tremor
-const tremorRef = ref(database, "tremor/magnitude"); 
+      // Update grafik dari Firebase
+      onValue(tremorRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          tremorChart.data.labels = [];
+          tremorChart.data.datasets[0].data = [];
 
-onValue(tremorRef, (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    // Reset grafik dulu
-    tremorChart.data.labels = [];
-    tremorChart.data.datasets[0].data = [];
+          Object.values(data).forEach((entry) => {
+            if (entry.magnitude !== undefined) {
+              const timeLabel = new Date(entry.timestamp_ms).toLocaleTimeString();
+              tremorChart.data.labels.push(timeLabel);
+              tremorChart.data.datasets[0].data.push(entry.magnitude);
+            }
+          });
 
-    // Loop setiap child
-    Object.values(data).forEach((entry) => {
-      // gunakan timestamp_ms kalau mau lebih rapi
-      const timeLabel = new Date(entry.timestamp_ms).toLocaleTimeString();
-
-      tremorChart.data.labels.push(timeLabel);
-      tremorChart.data.datasets[0].data.push(entry.magnitude);
-    });
-
-    tremorChart.update();
-  }
-});
-
+          tremorChart.update();
+        }
+      });
     </script>
   </head>
   <body>
@@ -89,5 +78,3 @@ onValue(tremorRef, (snapshot) => {
     <canvas id="tremorChart" width="600" height="400"></canvas>
   </body>
 </html>
-
-
