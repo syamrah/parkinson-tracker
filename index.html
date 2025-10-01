@@ -61,7 +61,13 @@
           tremorChart.data.labels = [];
           tremorChart.data.datasets[0].data = [];
 
-          Object.values(data).forEach((entry) => { if (entry.magnitude !== undefined) { const timeLabel = new Date(entry.timestamp_ms).toLocaleTimeString(); tremorChart.data.labels.push(timeLabel); tremorChart.data.datasets[0].data.push(entry.magnitude); } });
+          Object.values(data).forEach((entry) => {
+            if (entry.magnitude !== undefined) {
+              const timeLabel = new Date(entry.timestamp_ms).toLocaleTimeString();
+              tremorChart.data.labels.push(timeLabel);
+              tremorChart.data.datasets[0].data.push(entry.magnitude); 
+            } 
+          });
 
 
           tremorChart.update();
@@ -74,6 +80,7 @@
     <canvas id="tremorChart" width="600" height="400"></canvas>
   </body>
 </html>
+
 
 
 
