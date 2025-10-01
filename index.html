@@ -14,10 +14,10 @@
       // 🔹 Masukkan config punyamu di sini
       const firebaseConfig = {
         apiKey: "AIzaSyCUpSrDPRTvLOot4e4QboWgdJLj_PQByn8",
-        authDomain: "http://parkinson-11301.firebaseapp.com",
+        authDomain: "parkinson-11301.firebaseapp.com",
         databaseURL: "https://parkinson-11301-default-rtdb.firebaseio.com",
         projectId: "parkinson-11301",
-        storageBucket: "http://parkinson-11301.firebasestorage.app",
+        storageBucket: "parkinson-11301.firebasestorage.app",
         messagingSenderId: "779006164225",
         appId: "779006164225",
       };
@@ -59,16 +59,29 @@
         });
       };
 
-      // Update grafik setiap kali ada data baru
-      onValue(tremorRef, (snapshot) => {
-        const val = snapshot.val();
-        if (val) {
-          const now = new Date().toLocaleTimeString();
-          tremorChart.data.labels.push(now);
-          tremorChart.data.datasets[0].data.push(val);
-          tremorChart.update();
-        }
-      });
+// Referensi ke root data tremor
+const tremorRef = ref(database, "tremor"); 
+
+onValue(tremorRef, (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    // Reset grafik dulu
+    tremorChart.data.labels = [];
+    tremorChart.data.datasets[0].data = [];
+
+    // Loop setiap child
+    Object.values(data).forEach((entry) => {
+      // gunakan timestamp_ms kalau mau lebih rapi
+      const timeLabel = new Date(entry.timestamp_ms).toLocaleTimeString();
+
+      tremorChart.data.labels.push(timeLabel);
+      tremorChart.data.datasets[0].data.push(entry.magnitude);
+    });
+
+    tremorChart.update();
+  }
+});
+
     </script>
   </head>
   <body>
@@ -76,3 +89,4 @@
     <canvas id="tremorChart" width="600" height="400"></canvas>
   </body>
 </html>
+
