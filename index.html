@@ -60,7 +60,7 @@
       };
 
 // Referensi ke root data tremor
-const tremorRef = ref(database, "tremor"); 
+const tremorRef = ref(database, "tremor/magnitude"); 
 
 onValue(tremorRef, (snapshot) => {
   const data = snapshot.val();
@@ -89,4 +89,5 @@ onValue(tremorRef, (snapshot) => {
     <canvas id="tremorChart" width="600" height="400"></canvas>
   </body>
 </html>
+
 
