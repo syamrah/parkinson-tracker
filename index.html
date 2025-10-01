@@ -23,7 +23,7 @@
       const database = getDatabase(app);
 
       // 🔹 Ubah path sesuai struktur Firebase Anda
-      const tremorRef = ref(database, "tremor_data/esp32_tremor_01/history/latest")
+      const tremorRef = ref(database, "tremor_data/esp32_tremor_01/history")
 
  let ctx = null;
       let tremorChart = null;
@@ -52,21 +52,21 @@
             },
           },
         });
-      // Update grafik dari Firebase
-      onValue(tremorRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          tremorChart.data.labels = [];
-          tremorChart.data.datasets[0].data = [];
-
-         const entries = Object.values(data).sort((a, b) => a.timestamp_ms - b.timestamp_ms);
-        entries.forEach((entry) => {
-        if (entry.magnitude !== undefined) {
-          const timeLabel = new Date(entry.timestamp_ms).toLocaleTimeString();
-          tremorChart.data.labels.push(timeLabel);
-          tremorChart.data.datasets[0].data.push(entry.magnitude);
-  }
-});
+              // Update grafik dari Firebase
+              onValue(tremorRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                  tremorChart.data.labels = [];
+                  tremorChart.data.datasets[0].data = [];
+        
+                 const entries = Object.values(data).sort((a, b) => a.timestamp_ms - b.timestamp_ms);
+                entries.forEach((entry) => {
+                if (entry.magnitude !== undefined) {
+                  const timeLabel = new Date(entry.timestamp_ms).toLocaleTimeString();
+                  tremorChart.data.labels.push(timeLabel);
+                  tremorChart.data.datasets[0].data.push(entry.magnitude);
+          }
+        });
       };
 
 
