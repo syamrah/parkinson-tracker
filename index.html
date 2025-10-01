@@ -52,10 +52,8 @@
             },
           },
         });
-      };
-
       // Update grafik dari Firebase
-      onValue(tremorChart, (snapshot) => {
+      onValue(tremorRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
           tremorChart.data.labels = [];
@@ -69,6 +67,8 @@
           tremorChart.data.datasets[0].data.push(entry.magnitude);
   }
 });
+      };
+
 
 
 
@@ -82,6 +82,7 @@
     <canvas id="tremorChart" width="600" height="400"></canvas>
   </body>
 </html>
+
 
 
 
