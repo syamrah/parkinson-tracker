@@ -23,7 +23,7 @@
       const database = getDatabase(app);
 
       // 🔹 Ubah path sesuai struktur Firebase Anda
-      const tremorRef = ref(database, "esp32_tremor_01/history")
+      const tremorRef = ref(database, "tremordata/esp32_tremor_01/history")
 
  let ctx = null;
       let tremorChart = null;
@@ -79,6 +79,7 @@
     <canvas id="tremorChart" width="600" height="400"></canvas>
   </body>
 </html>
+
 
 
 
